@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1e4c50" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ScanLot" />
+  <title>ScanLot — test de reconnaissance de justificatifs</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="assets/logo-ja-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="site-header">
+      <div class="brand-lockup"><img class="brand-logo" src="assets/logo-ja-192.png" alt="Logo JA" /><strong>ScanLot</strong></div>
+      <p class="eyebrow">Prototype local</p>
+      <h1>Reconnaissance de lots de justificatifs</h1>
+      <p class="intro">Testez la lecture de tickets et factures. Les documents restent sur cet appareil.</p>
+    </header>
+
+    <section class="toolbar" aria-label="Actions principales">
+      <div id="dropZone" class="drop-zone"><label class="button primary" for="fileInput">Importer un lot</label><span>ou glissez-déposez vos PDF, JPG ou PNG ici</span></div>
+      <input id="fileInput" type="file" accept="application/pdf,image/jpeg,image/png" multiple hidden />
+      <label class="button" for="jsonInput">Importer un JSON</label>
+      <input id="jsonInput" type="file" accept="application/json,.json" hidden />
+      <button id="chooseSourceFolder" class="button" type="button">Choisir dossier des documents</button>
+      <button id="exportCsv" class="button" type="button" disabled>Exporter CSV validé</button>
+      <button id="exportJson" class="button" type="button" disabled>Sauvegarder le travail JSON</button>
+    </section>
+
+    <section class="notice">
+      <strong>Comment lire les résultats :</strong> « Texte lu » correspond au texte brut obtenu du PDF ou de l’OCR. Les autres colonnes sont des déductions de règles simples, à contrôler avant export.
+    </section>
+
+    <section class="panel">
+      <h2>Documents importés</h2>
+      <ul id="documentList" class="document-list"><li class="empty">Aucun document importé.</li></ul>
+    </section>
+
+    <section class="panel results-panel">
+      <div class="section-heading">
+        <div><h2>Résultats</h2><p id="progress" aria-live="polite">Importez un lot pour commencer.</p></div>
+        <button id="showStats" class="button" type="button" disabled>Statistiques</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fichier</th><th>Mois</th><th>Fournisseur</th><th>Nature</th><th>Montant TTC</th><th>Confiance</th><th>État</th><th>Texte lu</th></tr></thead>
+          <tbody id="resultsBody"><tr><td colspan="8" class="empty">Les résultats apparaîtront ici.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="rawTextDialog" class="dialog"><form method="dialog"><div class="dialog-heading"><h2 id="rawTextTitle">Texte lu</h2><button class="icon-button" aria-label="Fermer">×</button></div><p id="rawTextInfo"></p><textarea id="rawText" readonly></textarea><div class="dialog-actions"><button class="button primary">Fermer</button></div></form></dialog>
+  <dialog id="previewDialog" class="dialog preview-dialog"><form method="dialog"><div class="dialog-heading"><h2 id="previewTitle">Document source</h2><button class="icon-button" aria-label="Fermer">×</button></div><p id="previewUnavailable" hidden>Document introuvable dans le dossier sélectionné. Vérifiez son nom et choisissez le bon dossier.</p><iframe id="pdfPreview" title="Aperçu du document" hidden></iframe><img id="imagePreview" alt="Aperçu du document importé" hidden /><div class="dialog-actions"><button class="button primary">Fermer</button></div></form></dialog>
+  <dialog id="statsDialog" class="dialog"><form method="dialog"><div class="dialog-heading"><h2>Statistiques de l’essai</h2><button class="icon-button" aria-label="Fermer">×</button></div><div id="statsContent" class="stats-grid"></div><p class="dialog-note">Les « corrections » comptent les champs que vous avez modifiés après la proposition automatique. Elles aident à distinguer une reconnaissance utilisable d’une estimation à revoir.</p><div class="dialog-actions"><button class="button primary">Fermer</button></div></form></dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="app.js"></script>
+  <script>if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js").catch(() => {}));</script>
+</body>
+</html>
